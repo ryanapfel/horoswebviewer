@@ -1,0 +1,397 @@
+%INCLUDE:header.pvt.html%
+
+
+<nav aria-label="breadcrumb">
+	%[IF:!Session.dontDisplayBack%
+
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="../main">Home</a></li>
+		%[IF:backLink=="main"%%ELSE:backLink=="main"%<li class="breadcrumb-item"><a class="back"
+				href="%X:backLink%?%Info.getParameters(xid=)%">%X:ZWS:BackLinkLabel%</a></li>%]IF:backLink=="main"%
+		<li class="breadcrumb-item" aria-current="page">Current Study </li>
+
+	</ol>
+	%]IF:!Session.dontDisplayBack%
+
+</nav>
+
+
+<script type="text/javascript" language="javascript">
+
+	function checkAll(form) {
+		for (var i = 0; i < form.selected.length; i++)
+			form.selected[i].checked = true;
+		checkboxChanged(form);
+	}
+
+	function uncheckAll(form) {
+		for (var i = 0; i < form.selected.length; i++)
+			form.selected[i].checked = false;
+		checkboxChanged(form);
+	}
+
+	function checkboxChanged(form) {
+		var allChecked = true;
+		var allUnchecked = true;
+
+		if (form.selected) {
+			for (var i = 0; i < form.selected.length; i++) {
+				if (allChecked && !form.selected[i].checked) allChecked = false;
+				if (allUnchecked && form.selected[i].checked) allUnchecked = false;
+			}
+		}
+
+		if (form.CheckAll) form.CheckAll.disabled = allChecked;
+		if (form.UncheckAll) form.UncheckAll.disabled = allUnchecked;
+
+		var ifs = form.getElementsByClassName('if_selection');
+		for (var i = 0; i < ifs.length; ++i) {
+			ifs[i].disabled = allUnchecked;
+			if (ifs[i].classList) {
+				if (ifs[i].disabled && !ifs[i].classList.contains('disabled'))
+					ifs[i].classList.add('disabled');
+				if (!ifs[i].disabled && ifs[i].classList.contains('disabled'))
+					ifs[i].classList.remove('disabled');
+			}
+		}
+	}
+
+	function onSubmitForm(form) {
+		if (document.submitting == 'Weasis') {
+			form.method = "get";
+			form.action = "%Info.baseJnlpUrl%/weasis.jnlp";
+		} else {
+			form.method = "post";
+			form.action = document.location;
+		}
+		if (form.message) {
+			if (form.message.value == form.message.defaultValue)
+				form.message.value = '';
+		}
+		return true;
+	}
+
+	function imageClick(ixid, sxid) {
+		var div = document.createElement("div");
+		div.id = "overlay";
+		div.onclick = function () { document.body.removeChild(this); };
+		div.innerHTML = "<div><div><a href=\"/series?xid=" + sxid + "\"><img src=\"/image.jpg?xid=" + ixid + "\" /></a><div class=\"smaller\">Close</div></div></div>";
+		document.body.appendChild(div);
+	}
+
+	function shareDestinationChange(select) {
+		document.getElementById('shareDestinationCreateTemp').style.display = select.options[select.selectedIndex].value == 'NEW' ? 'inline' : 'none';
+	}
+
+</script>
+
+<div id="content">
+	%INCLUDE:/errors.pvt.html%
+	%INCLUDE:/messages.pvt.html%
+
+	%[IF:Study%
+	<div class="row">
+		<div class="col-4">
+			<div class="bg-light p-5 text-center">
+
+
+				<h2 class=""">%X:Study.name%</h2>
+				
+
+					<div>%X:Study.patientID%</div>
+
+
+					<div>%X:Study.accessionNumber%</div>
+
+
+					<div>%X:Study.InstitutionName%</div>
+
+
+					<div>%Study.date.DateTime.Spanned%</div>
+				
+				
+					<div>%X:Study.modalities%</div>
+				
+				
+					<div>%X:Study.studyName%</div>
+
+					%[IF:Study.stateText%
+					<h3 class=" badge rounded-pill">%X:Study.stateText%</h3>
+					%]IF:Study.stateText%
+
+					%[IF:Study.comment%
+					<div>
+						<h6>Core Lab Comments:</h6>
+						<p>%X:Study.comment%</p>
+					</div>
+					%]IF:Study.comment%
+
+
+					%[IF:Info.proposeReport%
+					%[IF:Study.reportIsLink%
+					<div><a href=" %X:Study.reportURL%" target="blank" class="report">Link to Report</a>
+						%ELSE:Study.reportIsLink%
+						%[IF:Study.reportURL%
+						<div><a href="report.pdf?xid=%Study.XID%" class="report">View Report as PDF file</a></div>
+						%]IF:Study.reportURL%
+						%]IF:Study.reportIsLink%
+						%]IF:Info.proposeReport%
+
+
+
+
+					</div>
+			</div>
+
+			<div class="col">
+
+
+				%[IF:Study.hasKeyImagesOrROIImages%
+				<div class="separated title">Key Images and ROI Images</div>
+				<div class="noleftmargin">
+					<table class="wide fat">
+						<div>
+							<div class="noleftmargin smaller">
+								%[FOREACH:Study.roiAndKeyImages:Image%
+								<a
+									href="keyroisimages?xid=%Study.XID%&%Info.getParameters(xid=)%&frames=yes#index%X:Image_Index%">
+									<img src="/thumbnail?xid=%Image.XID%" class="maxwide" />
+								</a>
+								%]FOREACH:Study.roiAndKeyImages:Image%
+							</div>
+						</div>
+					</table>
+				</div>
+				%]IF:Study.hasKeyImagesOrROIImages%
+
+				<form id="form" method="post" onsubmit="return onSubmitForm(this);">
+					<input type="hidden" name="sid" value="%Info.SID%" />
+					<div class="noleftmargin">
+						<div class="list-group">
+							%[FOREACH:Series:Series%
+							<div class="list-group-item">
+								<div class="d-flex w-100 justify-content-between">
+									<div class="narrow middle center">
+										%[IF:Series.noFiles>9%
+										<a
+											href="series%Series.seriesExtension%?xid=%Series.XID%&%Info.getParameters(xid=)%">
+											%ELSE:Series.noFiles>9%
+											<a
+												href="series%Series.seriesExtension%?xid=%Series.XID%&%Info.getParameters(xid=)%&frames=yes">
+												%]IF:Series.noFiles>9%
+												<img class='a' src="/thumbnail?xid=%Series.XID%" />
+											</a>
+									</div>
+
+									<div class="fat">
+										%[IF:Series.noFiles>9%
+										<a
+											href="series%Series.seriesExtension%?xid=%Series.XID%&%Info.getParameters(xid=)%">
+											%ELSE:Series.noFiles>9%
+											<a
+												href="series%Series.seriesExtension%?xid=%Series.XID%&%Info.getParameters(xid=)%&frames=yes">
+												%]IF:Series.noFiles>9%
+												<span class="bigger">%X:ZWS:Series.id% - %X:ZWS:Series.name%</span>
+												<span class="gray">
+													%[IF:Series.stateText%
+													%X:Series.stateText%,
+													%]IF:Series.stateText%
+													%[IF:Series.noFiles<2% 1 image %ELSE:Series.noFiles<2%
+														%LOCNUM:Series.noFiles% images %]IF:Series.noFiles<2% </span>
+														%[IF:Series.comment%
+														<div class="gray indent">%X:Series.comment%</div>
+														%]IF:Series.comment%
+												</span>
+											</a>
+									</div>
+
+
+									%[IF:Info.proposeZipDownload%
+									<div class="narrow middle">
+										<a
+											href="%U:Study.name% - %U:Series.name%.%[IF:Info.isMacOS%osirixzip%ELSE:Info.isMacOS%zip%]IF:Info.isMacOS%?xid=%Series.XID%">
+
+											<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+												fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+												<path
+													d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+												<path
+													d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+											</svg>
+
+										</a>
+									</div>
+									%]IF:Info.proposeZipDownload%
+
+
+
+
+
+								</div>
+							</div>
+							%]FOREACH:Series:Series%
+
+							%[IF:Series.count>1%
+							%[IF:Info.proposeDicomSend||Info.proposeWeasis%
+							<div>
+								<!-- <div>
+									<button type="button" name="CheckAll" onclick="checkAll(this.form)">All</button>
+									<button type="button" name="UncheckAll"
+										onclick="uncheckAll(this.form)">None</button>
+								</div> -->
+
+								<!-- %[IF:Info.proposeWeasis%
+								<div class="narrow middle">
+									<input type="image" src="images/weasis.png" alt="Open selected series in Weasis"
+										onclick="document.submitting='Weasis'" class="if_selection" />
+								</div>
+								%]IF:Info.proposeWeasis% -->
+
+
+								%]IF:Info.proposeDicomSend||Info.proposeWeasis%
+								%]IF:Series.count>1%
+
+
+								%[IF:Info.proposeShare&&ShareDestinations.count%
+								<form id="form" method="post" onsubmit="return onSubmitForm(this);">
+									<div class="title separated">Share</div>
+									<div>
+										<table class="basic wide form">
+											%[IF:User.isAdmin&&Study.authorizedUsers.count%
+											<div>
+												<div>This study is visible by:</div>
+
+												%[IF:Study.authorizedUsers.count>10%
+												<div
+													style="height: 200px; width: 200px; overflow-y: auto; padding: 3px;">
+													%ELSE:Study.authorizedUsers.count>10%
+													<div>
+														%]IF:Study.authorizedUsers.count>10%
+
+														<div>
+															%[FOREACH:Study.authorizedUsers:aUser%
+															%X:aUser.name%<br>
+															%]FOREACH:Study.authorizedUsers:aUser%
+														</div>
+
+													</div>
+												</div>
+												%]IF:User.isAdmin&&Study.authorizedUsers.count%
+												<div>
+													<div>User:</div>
+													<div>
+														<select name="shareStudyDestination" id="shareStudyDestination"
+															onchange="shareDestinationChange(this)">
+															%[FOREACH:ShareDestinations:Dest%
+															<option value="%Dest.XID%">%X:Dest.name%</option>
+															%]FOREACH:ShareDestinations:Dest%
+															%[IF:User.createTemporaryUser%
+															<option value="-" disabled>------------</option>
+															<option value="NEW">Create a Temporary User</option>
+															%]IF:User.createTemporaryUser%
+														</select>
+														<span id="shareDestinationCreateTemp" style="display: none;">
+															<label>with email: <input type="text"
+																	name="shareDestinationCreateTempEmail"
+																	style="width: 200px;" /></label> (this user will
+															last
+															%Defaults.temporaryUserDuration% days)
+														</span>
+														<script type="text/javascript" language="javascript">
+															shareDestinationChange(document.getElementById('shareStudyDestination'));
+														</script>
+													</div>
+												</div>
+												<div>
+													<div>Message:</div>
+													<div>
+														<textarea name="message" id="shareStudyMessage"
+															style="color:#666666"
+															onfocus="if (this.value == this.defaultValue) { this.value=''; this.style.color='#000000'; }"
+															onblur="if (this.value == '') { this.value = this.defaultValue; this.style.color='#666666'; }">Fill this field to specify a message that will be included in the notification e-mail sent to this user.</textarea>
+													</div>
+												</div>
+												<div>
+													<div></div>
+													<div>
+														<button type="submit" name="shareStudy" value="shareStudy"
+															onclick="document.submitting='Share'">Share</button>
+													</div>
+												</div>
+										</table>
+									</div>
+								</form>
+								%]IF:Info.proposeShare&&ShareDestinations.count%
+
+								%[IF:Info.proposeDicomSend%
+								<form id="form" method="post" onsubmit="return onSubmitForm(this);">
+									<div class="title separated">DICOM Transfer</div>
+									<div>
+										<table class="form">
+											<div>
+												<div>Destination:</div>
+												<div>
+													<select name="dicomDestination" id="dicomDestination">
+														%[FOREACH:DicomDestinations:Dest%
+														<option
+															value="%U:Dest.address%:%U:Dest.port%:%U:Dest.aeTitle%:%U:Dest.syntax%">
+															%X:Dest.description%</option>
+														%]FOREACH:DicomDestinations:Dest%
+													</select>
+													<button type="submit" name="dicomSend" value="dicomSend"
+														onclick="document.submitting='Send'"
+														class="if_selection">Send</button>
+												</div>
+											</div>
+										</table>
+									</div>
+								</form>
+
+								%]IF:Info.proposeDicomSend%
+							</div>
+							%]IF:Study%
+				</form>
+			</div>
+		</div>
+
+		<script type="text/javascript" language="javascript">
+			checkboxChanged(document.getElementById('form'));
+		</script>
+
+		<script>
+			$('.badge').each(function () {
+
+				var $this = $(this),
+					classToAdd = null;
+
+				switch ($this.text()) {
+					case 'unread':
+						classToAdd = 'bg-warning';
+						replaceText = 'Ready for Review'
+						break;
+
+					case 'dictated':
+						classToAdd = 'bg-danger';
+						replaceText = 'Issues with Imaging'
+						break;
+					case 'reviewed':
+						classToAdd = 'bg-success';
+						replaceText = 'Review Complete'
+						break;
+					case 'validated':
+						classToAdd = 'bg-info';
+						replaceText = 'Status Pending'
+						break;
+				}
+
+				if (classToAdd !== null) {
+					$this.addClass(classToAdd);
+					$this.text(replaceText)
+				}
+				console.log('a')
+
+			});
+		</script>
+
+
+		%INCLUDE:footer.pvt.html%

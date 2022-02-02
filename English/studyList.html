@@ -1,0 +1,189 @@
+%INCLUDE:header.pvt.html%
+
+
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="../main">Home</a></li>
+		<li class="breadcrumb-item active" aria-current="page">Study List</li>
+	</ol>
+</nav>
+
+<script type="text/javascript" language="javascript">
+	function printPagesHTML(numberOfPages, currentPage, parameters) {
+		if (currentPage > 0)
+			document.write("<a href=\"?" + parameters + "&page=" + 0 + "\">⇤</a>");
+		if (currentPage - 2 > 0)
+			document.write("<a href=\"?" + parameters + "&page=" + (currentPage - 2) + "\">⇇</a>");
+		if (currentPage - 1 > 0)
+			document.write("<a href=\"?" + parameters + "&page=" + (currentPage - 1) + "\">←</a>");
+
+		document.write(" " + (1 +% Session.FetchLimitPerPage %* currentPage) + "-" + (% Session.FetchLimitPerPage %* currentPage +% Studies.count %) + " of " +% Session.NumberOfStudies % +" ");
+
+		if (currentPage + 1 < numberOfPages - 1)
+			document.write("<a href=\"?" + parameters + "&page=" + (currentPage + 1) + "\">→</a>");
+		if (currentPage + 2 < numberOfPages - 1)
+			document.write("<a href=\"?" + parameters + "&page=" + (currentPage + 2) + "\">⇉</a>");
+		if (currentPage < numberOfPages - 1)
+			document.write("<a href=\"?" + parameters + "&page=" + (numberOfPages - 1) + "\">⇥</a>");
+	}
+</script>
+
+
+<div class="container">
+	%INCLUDE:/errors.pvt.html%
+	%INCLUDE:/messages.pvt.html%
+
+
+	%[IF:Studies.count%
+	<div class="noleftmargin">
+
+		<div class="d-flex justify-content-between p-2">
+
+
+			<form action="/studyList" method="get">
+				<div class=" d-flex flex-row align-items-center m-2">
+					<input type="text" class="form-control mr-2" id="search" name="search"
+						placeholder="StudyName-01_001-Timepoint" />
+
+
+					<button type="submit" class="btn btn-primary mr-2">Submit</button>
+				</div>
+			</form>
+
+			<table class="wide gray">
+				<tr>
+					<td class="">
+						<script type="text/javascript">
+							printPagesHTML(% Session.NumberOfPages %, % Session.Page %, "%Info.getParameters(page=)%");
+						</script>
+					</td>
+
+				</tr>
+			</table>
+			<div class="d-flex flex-row-reverse bd-highlight mb-3">
+
+				<div class="dropdown">
+
+					<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						Sort By
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+						<li><a class="dropdown-item" href="?%Info.getParameters(sortKey=name)%">Name</a></li>
+						<li><a class="dropdown-item" href="?%Info.getParameters(sortKey=date)%">Date</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+
+
+
+
+		<ul class="list-group" id="results">
+
+			%[FOREACH:Studies:Study%
+
+			<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-2">
+				<div class="flex justify-content-between">
+					<div>
+						<h5 class="name mb-1"><a
+								href="study?%Info.getParameters(sortKey=)%&xid=%Study.XID%">%X:ZWS:Study.name%
+
+							</a></h5>
+
+						%[IF:Study.stateText%
+						<span class="badge rounded-pill">%Study.stateText%</span>
+						%]IF:Study.stateText%
+
+
+
+
+					</div>
+
+
+					%[IF:Study.date%
+					<small>%Study.date.DateTime.Spanned%</small>
+					%]IF:Study.date%
+
+				</div>
+				<div>
+					<a
+						href="%U:Study.name% - %U:Study.studyName%.%[IF:Info.isMacOS%osirixzip%ELSE:Info.isMacOS%zip%]IF:Info.isMacOS%?xid=%Study.XID%">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+							class="bi bi-download" viewBox="0 0 16 16">
+							<path
+								d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+							<path
+								d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+						</svg></a>
+					%[IF:Info.isMacOS%
+					%[IF:Info.proposeWADORetrieve%
+
+					<a href="osirix://?methodName=DownloadURL&Display=YES&URL='%Info.WADOBaseURL%?requestType=WADO&studyUID=%U:Study.studyInstanceUID%&token=%Info.newToken%'"
+						class="btn btn-secondary">
+						Open With Horos
+					</a>
+
+					%]IF:Info.proposeWADORetrieve%
+					%]IF:Info.isMacOS%
+
+				</div>
+
+			</li>
+			%]FOREACH:Studies:Study%
+		</ul>
+		<div class="gray wide noleftmargin separated">
+			<script type="text/javascript">
+				printPagesHTML(% Session.NumberOfPages %, % Session.Page %, "%Info.getParameters(page=)%");
+			</script>
+		</div>
+	</div>
+	%ELSE:Studies.count%
+	<div class="alert alert-primary" role="alert">
+		No results matching your search
+	</div>
+	%]IF:Studies.count%
+</div>
+
+</div>
+
+
+<script>
+	$('.badge').each(function () {
+
+		var $this = $(this),
+			classToAdd = null;
+
+		switch ($this.text()) {
+			case 'unread':
+				classToAdd = 'bg-warning';
+				replaceText = 'Ready for Review'
+				break;
+
+			case 'dictated':
+				classToAdd = 'bg-danger';
+				replaceText = 'Issues with Imaging'
+				break;
+			case 'reviewed':
+				classToAdd = 'bg-success';
+				replaceText = 'Review Complete'
+				break;
+			case 'validated':
+				classToAdd = 'bg-info';
+				replaceText = 'Status Pending'
+				break;
+		}
+
+		if (classToAdd !== null) {
+			$this.addClass(classToAdd);
+			$this.text(replaceText)
+		}
+		console.log('a')
+
+	});
+</script>
+
+
+
+%INCLUDE:footer.pvt.html%

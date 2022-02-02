@@ -1,0 +1,57 @@
+<div class="d-flex align-items-center justify-content-center bg-light" style="height: 100vh">
+
+
+	<script src="/sha1-min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		function loginAction(form) {
+			form.sha1.value = hex_sha1(form.password.value + form.username.value);
+			form.password.value = '';
+			return true;
+		}
+	</script>
+	<input type="hidden" id="sha1" name="sha1" value="" />
+	%[IF:User%
+	<p class="center">
+		<br>
+		Your session is still active (username: <b>%X:User.name%</b>), press login to enter, or logout (upper right) to
+		change the session user.
+		<br>
+	</p>
+	%]IF:User%
+	<main class="bd-highlight col-example d-flex flex-column  align-items-center">
+		<img class="align mb-5" height="50" width="55" src="images/core_lab_logo.png" />
+
+
+		<div class="p-5 bg-white rounded">
+			%[IF:Info.authenticationRequired%
+			<div class="mb-4 text-center">
+				<h1>
+					StrokeDrop Login
+				</h1>
+				<p class="text-secondary">
+					Enter your credentials below
+				</p>
+			</div>
+			<div class="form-floating mb-4">
+				<input type="text" name="username" class="form-control" id="floatingInput" placeholder="User">
+				<label for="floatingInput">User</label>
+			</div>
+
+			<div class="form-floating mb-4">
+				<input type="password" class="form-control" id="floatingPassword" name="password"
+					placeholder="Password">
+				<label for="floatingPassword">Password</label>
+			</div>
+			%]IF:Info.authenticationRequired%
+			<input class="w-100 btn btn-lg btn-primary" type="submit" name="login" value="Login"
+				onclick="return loginAction(this.form)" />
+		</div>
+		%[IF:Info.authenticationRequired&&Info.passwordRestoreAllowed%
+		<div class="mt-5">
+
+			<p class="text-secondary">Forgot your password? <a href="password_forgotten">Reset Password</a></p>
+		</div>
+		%]IF:Info.authenticationRequired&&Info.passwordRestoreAllowed%
+
+	</main>
+</div>

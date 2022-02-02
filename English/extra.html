@@ -1,0 +1,90 @@
+<!-- %[IF:Study.otherStudiesForThisPatient.count% <tr>
+				<td><b>Other&nbsp;Studies&nbsp;for&nbsp;this&nbsp;patient:</b></td>
+			</div>
+			%[FOREACH:Study.otherStudiesForThisPatient:ComparativeStudy%
+			<td>
+				%[IF:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID%<b>%]IF:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID%
+					%ComparativeStudy.date.DateTime.Spanned%:
+					%[IF:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID%</b>%]IF:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID%
+			</td>
+			<td>
+				%[IF:Info.proposeWeasis%
+				<input type="checkbox" class="checkbox" name="selected" value="%ComparativeStudy.XID%"
+					onchange="checkboxChanged(this.form)"
+					%[IF:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID%checked="checked"
+					%]IF:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID% />
+				%]IF:Info.proposeWeasis%
+
+				%[IF:Info.isMacOS%
+				%[IF:Info.proposeWADORetrieve%
+				<a
+					href="osirix://?methodName=DownloadURL&Display=YES&URL='%Info.WADOBaseURL%?requestType=WADO&studyUID=%U:ComparativeStudy.studyInstanceUID%&token=%Info.newToken%'"><img
+						src="images/osirixSmall.png" style="vertical-align:middle" /></a>
+				%]IF:Info.proposeWADORetrieve%
+				%]IF:Info.isMacOS%
+
+				%[IF:Info.proposeZipDownload%
+				<a
+					href="%U:ComparativeStudy.name% - %U:ComparativeStudy.studyName%.%[IF:Info.isMacOS%osirixzip%ELSE:Info.isMacOS%zip%]IF:Info.isMacOS%?xid=%ComparativeStudy.XID%"><img
+						src="images/downloadSmall.png" style="vertical-align:middle" /></a>
+				%]IF:Info.proposeZipDownload%
+
+				%[IF:Info.proposeWeasis%
+				<a href="%Info.baseJnlpUrl%/weasis.jnlp?xid=%ComparativeStudy.XID%&sid=%Info.SID%"><img
+						src="images/weasisSmall.png" style="vertical-align:middle" /></a>
+				%]IF:Info.proposeWeasis%
+
+				%[IF:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID%
+				<b>
+					%ELSE:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID%
+					<a href="study?%Info.getParameters(xid=)%&xid=%ComparativeStudy.XID%">
+						%]IF:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID%
+
+						<span class="bigger compressed">%X:ZWS:ComparativeStudy.studyName%</span> <span
+							class="gray details">,
+							%X:ComparativeStudy.modality%%[IF:ComparativeStudy.imageSeries.count%,
+							%X:ComparativeStudy.imageSeries.count%
+							series%]IF:ComparativeStudy.imageSeries.count%%[IF:ComparativeStudy.patientID%,
+							%X:ComparativeStudy.patientID%%]IF:ComparativeStudy.patientID%%[IF:ComparativeStudy.accessionNumber%,
+							%X:ComparativeStudy.accessionNumber%%]IF:ComparativeStudy.accessionNumber%</span>
+						<div class="gray indent compressed">
+							%[IF:ComparativeStudy.comment%<div class="italic indent">
+								%X:ZWS:ComparativeStudy.comment%</div>%]IF:ComparativeStudy.comment%
+						</div>
+
+						<div class="gray indent compressed">
+						</div>
+
+						%[IF:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID%
+				</b>
+				%ELSE:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID%
+				</a>
+				%]IF:ComparativeStudy.studyInstanceUID==Study.studyInstanceUID%
+			</td>
+		</div>
+		%]FOREACH:Study.otherStudiesForThisPatient:ComparativeStudy%
+
+
+		%[IF:Study.otherStudiesForThisPatient.count>1%
+		%[IF:Info.proposeDicomSend||Info.proposeWeasis%
+		<tr>
+			<td>
+				Selection:
+			</td>
+
+			<td>
+				<button type="button" name="CheckAll" onclick="checkAll(this.form)">Tout</button>
+				<button type="button" name="UncheckAll" onclick="uncheckAll(this.form)">Aucun</button>
+			</td>
+
+
+			<td>
+				%[IF:Info.proposeWeasis%
+				<input type="image" src="images/weasisSmall.png" alt="Open selected series in Weasis"
+					onclick="document.submitting='Weasis'" class="if_selection" />
+				%]IF:Info.proposeWeasis%
+			</td>
+	%]IF:Info.proposeDicomSend||Info.proposeWeasis%
+	%]IF:Study.otherStudiesForThisPatient.count>1%
+
+	%]IF:Study.otherStudiesForThisPatient.count% -->

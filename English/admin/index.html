@@ -1,0 +1,59 @@
+%INCLUDE:/header.pvt.html%
+
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="../main">Home</a></li>
+		<li class="breadcrumb-item active" aria-current="page">Admin</li>
+	</ol>
+</nav>
+
+<div id="content">
+	%INCLUDE:/errors.pvt.html%
+	%INCLUDE:/messages.pvt.html%
+
+
+	<div>
+		<div class="container bg-light p-4">
+			<div class="d-flex  justify-content-between">
+				<h3>Users</h3>
+				<form method="GET" action="/admin/user"><button type="submit" class="btn btn-primary" name="action"
+						value="new"> New User</button>
+				</form>
+			</div>
+
+			<form class="form-inline">
+				<label for="search">Search users</label>
+				<input class="form-control mr-sm-2" type="search" id="searchUsers" placeholder="Search"
+					aria-label="Search">
+			</form>
+
+		</div>
+		<div class="container mt-3">
+			<ul class="list-group" id="list">
+				%[FOREACH:Users:User%
+				<a class="list-group-item  list-group-item-action" href="/admin/user?name=%U:User.name%">
+
+					<h6>%X:User.name%</h6>
+					<small>%X:User.Phone%</small>
+
+				</a>
+				%]FOREACH:Users:User%
+			</ul>
+		</div>
+
+	</div>
+</div>
+
+
+<script>
+	$(document).ready(function () {
+		$("#searchUsers").on("keyup", function () {
+			var value = $(this).val().toLowerCase();
+			$("#list a").filter(function () {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			});
+		});
+	});
+</script>
+
+%INCLUDE:/footer.pvt.html%

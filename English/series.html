@@ -1,0 +1,53 @@
+%INCLUDE:header.pvt.html%
+<div id="subheader">
+	<a class="back" href="../main">Home</a> <a class="back"
+		href="study?xid=%Series.study.XID%&%Info.getParameters(xid=,frames=)%">%X:ZWS:BackLinkLabel%</a>
+</div>
+
+<div id="content">
+	%INCLUDE:/errors.pvt.html%
+	%INCLUDE:/messages.pvt.html%
+
+	<div class="center">
+
+
+
+		<div id="dwv">
+			<div id="layerGroup0"></div>
+		</div>
+
+		<div>
+
+			%[FOREACH:Series.sortedImages:Image%
+			<img src="/image.jpg?xid=%Image.XID%" class="maxwide" />
+			%]FOREACH:Series.sortedImages:Image%
+		</div>
+
+		<table width="100%">
+			<tr>
+				<td align="right" width="45%">
+					%[IF:Series.previousSeries%
+					<a class="back"
+						href="series?xid=%Series.previousSeries.XID%&%Info.getParameters(xid=,frames=)%">Previous
+						Series</a>
+					%]IF:Series.previousSeries%
+				</td>
+				<td align="left" width="10%"></td>
+				<td align="left" width="45%">
+					%[IF:Series.nextSeries%
+					<a class="foreward"
+						href="series?xid=%Series.nextSeries.XID%&%Info.getParameters(xid=,frames=)%">Next Series</a>
+					%]IF:Series.nextSeries%
+				</td>
+			</tr>
+		</table>
+
+
+
+
+	</div>
+</div>
+
+
+
+%INCLUDE:footer.pvt.html%
