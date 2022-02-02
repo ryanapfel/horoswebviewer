@@ -1,7 +1,7 @@
 # How to Install
 
 
-1. Whatever the name of the user folder is go to that
+1. Execute the commands below. Insert the username (probally drop) for <USERNAME> in the first line below
 ```
 cd /Users/<USERNAME>/Library/Application\ Support/Horos
 git clone https://github.com/ryanapfel/horoswebviewer.git
