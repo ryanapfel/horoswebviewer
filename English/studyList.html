@@ -156,6 +156,11 @@
 			classToAdd = null;
 
 		switch ($this.text()) {
+			case 'empty':
+				classToAdd = 'bg-warning';
+				replaceText = 'Image Received'
+				break;
+
 			case 'unread':
 				classToAdd = 'bg-warning';
 				replaceText = 'Ready for Review'
@@ -163,15 +168,15 @@
 
 			case 'dictated':
 				classToAdd = 'bg-danger';
-				replaceText = 'Issues with Imaging'
+				replaceText = 'Image Issues'
 				break;
 			case 'reviewed':
-				classToAdd = 'bg-success';
-				replaceText = 'Review Complete'
+				classToAdd = 'bg-info';
+				replaceText = 'Review in Proccess'
 				break;
 			case 'validated':
-				classToAdd = 'bg-info';
-				replaceText = 'Status Pending'
+				classToAdd = 'bg-success';
+				replaceText = 'Review Complete'
 				break;
 		}
 
