@@ -14,7 +14,7 @@ The following imaging has been received (Date - Modality):
 <ul>
 	%[FOREACH:Studies:Study%
 	<li>
-		%X:Study.date.DateTime% - (%X:Study.modality%)</a>
+		%X:Study.studyName%: %X:Study.date.DateTime% - (%X:Study.modality%)</a>
 	</li>
 	%]FOREACH:Studies:Study%
 </ul>
