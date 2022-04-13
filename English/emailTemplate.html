@@ -9,12 +9,12 @@ Thank you for uploading to StrokeDrop, this email is a confirmation that we have
 </b>
 %]IF:customText.length%
 
-The following imaging has been received (Date - Modality):
+The following imaging has been received (Name: Date - Modality):
 
 <ul>
 	%[FOREACH:Studies:Study%
 	<li>
-		%X:Study.studyName%: %X:Study.date.DateTime% - (%X:Study.modality%)</a>
+		%X:Study.name%: %X:Study.date.DateTime% - (%X:Study.modality%)</a>
 	</li>
 	%]FOREACH:Studies:Study%
 </ul>
